@@ -1,5 +1,7 @@
-/cmny/bin/
-/cmny/gen/
+/bin/
 /gen/
 /nbandroid/
-/bin/
+build.xml
+default.properties
+local.properties
+proguard.cfg
