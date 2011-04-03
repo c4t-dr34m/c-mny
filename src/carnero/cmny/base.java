@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.util.Log;
 import android.widget.RemoteViews;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,13 +18,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class base {
+	// settings
+	public static String formatSms = "info@rb\\.cz:[a-zA-Z ]+ B:([0-9]{2})\\.([0-9]{2})\\.([0-9]{4}): ([0-9 ]+,[0-9]*)#";
+	public static String formatDate = "yyyy.MM.dd";
+	public static String currencyBefore = "";
+	public static String currencyAfter = " Kč";
 	public static long refreshInterval = (15 * 60 * 1000); // fifteen mins
+
 	public static int BLACK = 0;
 	public static int WHITE = 1;
-
 	private SharedPreferences prefs = null;
-	private static Pattern patternMsg = Pattern.compile("info@rb\\.cz:[a-zA-Z ]+ B:([0-9]{2})\\.([0-9]{2})\\.([0-9]{4}): ([0-9 ]+,[0-9]*)#", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-	private static SimpleDateFormat dateOut = new SimpleDateFormat("yyyy.MM.dd");
+	private static Pattern patternMsg = Pattern.compile(formatSms, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+	private static SimpleDateFormat dateOut = new SimpleDateFormat(formatDate);
 
 	public void refresh(int skin, Context context) {
 		refresh(skin, context, null, null);
@@ -122,7 +126,7 @@ public class base {
 			
 			// display money
 			if (stateMoney != null && stateDate != null) {
-				views.setTextViewText(R.id.value, String.format(Locale.getDefault(), "%.2f", stateMoney) + " Kč");
+				views.setTextViewText(R.id.value, currencyBefore + String.format(Locale.getDefault(), "%.2f", stateMoney) + currencyAfter);
 				views.setTextViewText(R.id.date, dateOut.format(stateDate.getTime()));
 			} else {
 				views.setTextViewText(R.id.value, null);
