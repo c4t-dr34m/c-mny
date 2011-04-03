@@ -1,0 +1,5 @@
+c:mny (short for "carnero: money") is a simple widget for Android
+
+It's private widget, working only for me. But if you want, you can grab the source and fix it to work for your conditions.
+
+Widget is reading text messages and searching for defined text, reading from it date and current bank account balance. Then it's displaying those values on screen. Nothing else! So, it's supposed to show remind my account balance for me because I'm too lazy to remember it myself.
