@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
@@ -21,8 +22,8 @@ public class base {
 	public static long refreshInterval = (15 * 60 * 1000); // fifteen mins
 	public static int BLACK = 0;
 	public static int WHITE = 1;
-	
-	// info@rb.cz:Zprava o zmene zustatku uctu B:31.03.2011: 5 069,#
+
+	private SharedPreferences prefs = null;
 	private static Pattern patternMsg = Pattern.compile("info@rb\\.cz:[a-zA-Z ]+ B:([0-9]{2})\\.([0-9]{2})\\.([0-9]{4}): ([0-9 ]+,[0-9]*)#", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	private static SimpleDateFormat dateOut = new SimpleDateFormat("yyyy.MM.dd");
 
@@ -39,14 +40,24 @@ public class base {
 	}
 
 	public void refresh(int skin, Context context, int[] ids, String intentText) {
-		RemoteViews views;
-
+		RemoteViews views = null;
 		ArrayList<String> msgs = new ArrayList<String>();
-		Double stateMoney = null;
+		Float stateMoney = null;
 		Calendar stateDate = null;
+		boolean stateChanged = false;
 
 		if (context == null) {
 			return;
+		}
+		
+		// load last known values
+		prefs = context.getSharedPreferences("cmny.prefs", 0);
+		if (prefs.contains("money")) {
+			stateMoney = prefs.getFloat("money", 0);
+		}
+		if (prefs.contains("date")) {
+			stateDate = Calendar.getInstance();
+			stateDate.setTimeInMillis(prefs.getLong("date", 0));
 		}
 
 		final AppWidgetManager manager = AppWidgetManager.getInstance(context);
@@ -101,13 +112,14 @@ public class base {
 						datePre.set(Integer.parseInt(Y), (Integer.parseInt(m) - 1), Integer.parseInt(d));
 						
 						if (stateDate == null || stateDate.before(datePre)) {
-							stateMoney = new Double(v.replaceAll("[ ]+", "").replaceAll("[,]+", "."));
+							stateMoney = new Float(v.replaceAll("[ ]+", "").replaceAll("[,]+", "."));
 							stateDate = datePre;
+							stateChanged = true;
 						}
 					}
 				}
 			}
-
+			
 			// display money
 			if (stateMoney != null && stateDate != null) {
 				views.setTextViewText(R.id.value, String.format(Locale.getDefault(), "%.2f", stateMoney) + " Kč");
@@ -116,7 +128,7 @@ public class base {
 				views.setTextViewText(R.id.value, null);
 				views.setTextViewText(R.id.date, null);
 			}
-				
+			
 			// set pendingintent on click
 			Intent intentWid = null;
 			PendingIntent intentPending = null;
@@ -154,6 +166,7 @@ public class base {
 				alarmManager.setInexactRepeating(AlarmManager.RTC, (System.currentTimeMillis() + refreshInterval), refreshInterval, intentPending);
 			}
 
+			// refresh widgets
 			if (ids != null && ids.length > 0) {
 				final int idsCnt = ids.length;
 
@@ -168,6 +181,16 @@ public class base {
 					final ComponentName component = new ComponentName(context, cmny_black.class);
 					manager.updateAppWidget(component, views);
 				}
+			}
+			
+			// save last value
+			if (stateChanged == true && stateMoney != null && stateDate != null) {
+				final SharedPreferences.Editor prefsEdit = prefs.edit();
+				
+				prefsEdit.putFloat("money", stateMoney);
+				prefsEdit.putLong("date", stateDate.getTimeInMillis());
+				
+				prefsEdit.commit();
 			}
 		} catch (Exception e) {
 			// nothing
