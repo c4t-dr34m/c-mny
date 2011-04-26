@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 public class base {
 	// settings
-	public static String formatSms = "info@rb\\.cz:[a-zA-Z ]+ B:([0-9]{2})\\.([0-9]{2})\\.([0-9]{4}): ([0-9 ]+,[0-9]*)#";
+	public static String formatSms = "info@rb\\.cz:[a-zA-Z ]+ B:([0-9]{2})\\.([0-9]{2})\\.([0-9]{4}): ([0-9 ]+(,[0-9]*)?)#";
 	public static String formatDate = "yyyy.MM.dd";
 	public static String currencyBefore = "";
 	public static String currencyAfter = " Kč";
