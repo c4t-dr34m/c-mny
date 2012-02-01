@@ -19,11 +19,11 @@ import java.util.regex.Pattern;
 
 public class base {
 	// settings
-	public static String formatSms = "info@rb\\.cz:[a-zA-Z ]+ B:([0-9]{2})\\.([0-9]{2})\\.([0-9]{4}): ([0-9 ]+(,[0-9]*)?)#";
-	public static String formatDate = "yyyy.MM.dd";
-	public static String currencyBefore = "";
-	public static String currencyAfter = " Kč";
-	public static long refreshInterval = (15 * 60 * 1000); // fifteen mins
+	public static final String formatSms = "info@rb\\.cz:[a-zA-Z ]+ B:([0-9]{2})\\.([0-9]{2})\\.([0-9]{4}): (-?[0-9 ]+(,[0-9]*)?) ?#";
+	public static final String formatDate = "yyyy.MM.dd";
+	public static final String currencyBefore = "";
+	public static final String currencyAfter = " CZK";
+	public static final long refreshInterval = (15 * 60 * 1000); // fifteen mins
 
 	public static int BLACK = 0;
 	public static int WHITE = 1;
@@ -44,7 +44,7 @@ public class base {
 	}
 
 	public void refresh(int skin, Context context, int[] ids, String intentText) {
-		RemoteViews views = null;
+		RemoteViews views;
 		ArrayList<String> msgs = new ArrayList<String>();
 		Float stateMoney = null;
 		Calendar stateDate = null;
